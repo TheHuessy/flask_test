@@ -13,5 +13,5 @@ A playground to get a better handle on Flask
 
 *HTML AND CSS*
 
-: * Should setup a css file to get the full 'experience'
+* Should setup a css file to get the full 'experience'
 
