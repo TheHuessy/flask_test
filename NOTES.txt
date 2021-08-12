@@ -1,0 +1,12 @@
+.flaskenv
+    Is read at runtime/execution of `flask run`
+    Contains flask specific env vars
+        Host, port, environment, etc.
+python and pip issues
+    pip install didn't quite set up installing python-dotenv well
+        Was able to fix it with python -m pip install python-dotenv
+    >>Pretty sure it's that I have aliased python3 to python, but haven't done the same for pip
+        It must have been downloading the package as pip not pip3
+            Alias added
+        
+
