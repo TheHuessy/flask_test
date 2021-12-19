@@ -9,7 +9,7 @@ app = Flask(__name__)
 ##################
 
 def get_random_link():
-    raw_dat_out = su.SQLUtils().execute("SELECT end_link FROM culling_direct WHERE keep = '1' ORDER BY random() LIMIT 1")
+    raw_dat_out = su.SQLUtils().execute("SELECT end_link FROM single_viewer")
     data_out = raw_dat_out.values.flatten()
 
     return(data_out[0])
