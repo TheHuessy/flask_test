@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+    <title>My first HTML document</title>
+  </head>
+  <div id="div_wrapper" onclick="next_image()">
+    <body>
+      <img id="main_img" src="{{ response['link'] }}"></img>
+    </body>
+  </div>
+  <script>
+
+    function switch_image(new_link){
+      var img_target = document.getElementById("main_img");
+      img_target.src = new_link;
+    }
+
+    function next_image(){
+      $.ajax({
+        type: 'GET',
+        url: "/viewer_api",
+        data: {},
+        dataType: "text",
+        success: function(data){
+          switch_image(data);
+        }
+      });
+    }
+
+  </script>
+</html>

@@ -8,5 +8,4 @@ python and pip issues
     >>Pretty sure it's that I have aliased python3 to python, but haven't done the same for pip
         It must have been downloading the package as pip not pip3
             Alias added
-        
 
