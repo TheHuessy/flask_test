@@ -8,24 +8,55 @@
   </head>
   <div id="div_wrapper" onclick="next_image()">
     <body>
-      <img id="main_img" src="{{ response['link'] }}"></img>
+      <!-- <p id="debug_display">{{ response['link'] }}</p> -->
+      <img crossorigin="anonymous" id="main_img" src="{{ response['link'] }}"></img>
     </body>
   </div>
   <script>
 
     function switch_image(new_link){
       var img_target = document.getElementById("main_img");
-      img_target.src = new_link;
+//      if ( !img_target.includes("static")
+      img_target.crossOrigin = "Anonymous";
+      // img_target.src = new_link;
+      if ( new_link.includes("static")) {
+        img_target.src = new_link;
+      } else {
+        img_target.src = new_link+"?not-from-cache-please";
+      }
+
+//      var debug = document.getElementById("debug_display");
+//      debug.innerHTML = new_link;
     }
 
     function next_image(){
+//      $.ajaxSetup({
+//            headers: { 'Access-Control-Allow-Origin': '*' }
+//      });
       $.ajax({
         type: 'GET',
         url: "/viewer_api",
         data: {},
         dataType: "text",
-        success: function(data){
-          switch_image(data);
+        success: function(resp_data){
+//          $.get(resp_data, function(data) {
+//            console.log(data);
+//            }).done(function() {
+//              console.log("It looks like it went through");
+//              // TO DO ON DONE
+//            }).fail(function(data, textStatus, xhr) {
+//              //This shows status code eg. 403
+//              console.log("error", data.status);
+//              //This shows status message eg. Forbidden
+//              console.log("STATUS: "+xhr);
+//            }).always(function() {
+//              //TO-DO after fail/done request.
+//              console.log("ended");
+//            });
+          switch_image(resp_data);
+          console.log("Link Pulled:");
+          console.log(resp_data);
+
         }
       });
     }

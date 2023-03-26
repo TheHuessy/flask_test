@@ -1,6 +1,8 @@
 # Flask possibly sensitive docs
 *.swp
 
+static/cache/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
