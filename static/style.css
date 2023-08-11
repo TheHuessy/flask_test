@@ -8,7 +8,6 @@ img {
   display: block;
   margin-left: auto;
   margin-right: auto;
-  /* width: 100%; */
   max-height: 100%;
   max-width: 100%;
 }
@@ -21,22 +20,39 @@ div {
   height: 100vh;
 }
 
+/* .dots-5 { */
 .loader {
+  width: 15px;
+  aspect-ratio: 1;
+  position: absolute;
+  right: 10%;
+  bottom: 2%;
+  border-radius: 50%;
+  z-index: 100000;
+  animation: d5 1s infinite linear alternate;
+}
+
+@keyframes d5 {
+  0%  {box-shadow: 20px 0 #fff, -20px 0 #0002;background: #fff }
+  33% {box-shadow: 20px 0 #fff, -20px 0 #0002;background: #0002}
+  66% {box-shadow: 20px 0 #0002,-20px 0 #fff; background: #0002}
+  100%{box-shadow: 20px 0 #0002,-20px 0 #fff; background: #fff }
+}
+
+/* .loader {
   width: 48px;
   height: 48px;
   border: 5px solid #FFF;
   border-radius: 50%;
   display: inline-block;
-  /* position: relative; */
   position: absolute;
-  left: 43%; /*This appears to be the best way to get it mostly centered*/
   top: 50%;
   box-sizing: border-box;
   animation: rotation 1s linear infinite;
   z-index: 1000;
-}
+} */
 
-.loader::after {
+/* .loader::after {
   content: '';
   box-sizing: border-box;
   position: absolute;
@@ -48,14 +64,14 @@ div {
   border-radius: 50%;
   border: 3px solid;
   border-color: #FF3D00 transparent;
-}
+} */
 
-@keyframes rotation {
+/* @keyframes rotation {
   0% {
     transform: rotate(0deg);
   }
   100% {
     transform: rotate(360deg);
   }
-}
+} */
 
