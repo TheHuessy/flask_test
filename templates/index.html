@@ -6,13 +6,19 @@
     <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
     <title>Viewer</title>
   </head>
-  <div id="div_wrapper" onclick="next_image()">
+  <!--  <div id="div_wrapper" onclick="next_image()"> -->
     <body>
+      <div id="div_wrapper" onclick="next_image()">
       <!-- <p id="debug_display">{{ response['link'] }}</p> -->
+      <span id="loader-spinner" class="loader"></span>
       <img crossorigin="anonymous" id="main_img" src="{{ response['link'] }}"></img>
+      </div>
     </body>
-  </div>
+    <!-- </div> -->
   <script>
+    $(document).ready(function() {
+      $("#loader-spinner").hide();
+    })
 
     function switch_image(new_link){
       var img_target = document.getElementById("main_img");
@@ -30,6 +36,8 @@
     }
 
     function next_image(){
+      //$("#loader-spinner").show();
+      $(".loader").show();
 //      $.ajaxSetup({
 //            headers: { 'Access-Control-Allow-Origin': '*' }
 //      });
@@ -39,26 +47,17 @@
         data: {},
         dataType: "text",
         success: function(resp_data){
-//          $.get(resp_data, function(data) {
-//            console.log(data);
-//            }).done(function() {
-//              console.log("It looks like it went through");
-//              // TO DO ON DONE
-//            }).fail(function(data, textStatus, xhr) {
-//              //This shows status code eg. 403
-//              console.log("error", data.status);
-//              //This shows status message eg. Forbidden
-//              console.log("STATUS: "+xhr);
-//            }).always(function() {
-//              //TO-DO after fail/done request.
-//              console.log("ended");
-//            });
-          switch_image(resp_data);
+          var clean_data = JSON.parse(resp_data)
+          switch_image(clean_data['link']);
           console.log("Link Pulled:");
-          console.log(resp_data);
+          console.log(clean_data);
+          $(".loader").hide();
 
         }
       });
+      // $("#loader-spinner").hide();
+      // $(".loader").hide();
+
     }
 
   </script>

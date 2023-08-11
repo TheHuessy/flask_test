@@ -1,7 +1,7 @@
 # Flask possibly sensitive docs
 *.swp
 
-static/cache/
+static/cache/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
