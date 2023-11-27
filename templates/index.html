@@ -7,7 +7,8 @@
     <title>Viewer</title>
   </head>
     <body>
-        <div id="div_wrapper" class="view_full" onclick="next_image()">
+      <!-- <div id="div_wrapper" class="view_full" onclick="next_image()">  -->
+        <div id="div_wrapper" class="view_full">
           <span id="loader-spinner" class="loader"></span>
           <img crossorigin="anonymous" id="main_img" src="{{ response['link'] }}"></img>
         </div>
@@ -56,6 +57,57 @@
       handleGesture();
     }, false);
 
+    document.getElementById("div_wrapper").addEventListener('mousedown', function (event) {
+      clicked = true;
+      touchstartX = event.screenX;
+      touchstartY = event.screenY;
+    }, false);
+
+    document.getElementById("div_wrapper").addEventListener('mousemove', function (event) {
+      clicked = false;
+    }, false);
+
+    document.getElementById("div_wrapper").addEventListener('mouseup', function (event) {
+      if (clicked) {
+        next_image();
+      }
+      touchendX = event.screenX;
+      touchendY = event.screenY;
+      handleGesture();
+      clicked = false;
+    }, false);
+
+    document.getElementById("options_menu").addEventListener('touchstart', function (event) {
+      touchstartX = event.changedTouches[0].screenX;
+      touchstartY = event.changedTouches[0].screenY;
+    }, false);
+
+    document.getElementById("options_menu").addEventListener('touchend', function (event) {
+      touchendX = event.changedTouches[0].screenX;
+      touchendY = event.changedTouches[0].screenY;
+      handleGesture();
+    }, false);
+
+    document.getElementById("options_menu").addEventListener('mousedown', function (event) {
+      clicked = true;
+      touchstartX = event.screenX;
+      touchstartY = event.screenY;
+    }, false);
+
+    document.getElementById("options_menu").addEventListener('mousemove', function (event) {
+      clicked = false;
+    }, false);
+
+    document.getElementById("options_menu").addEventListener('mouseup', function (event) {
+      if (clicked) {
+        next_image();
+      }
+      touchendX = event.screenX;
+      touchendY = event.screenY;
+      handleGesture();
+      clicked = false;
+    }, false);
+
     function open_menu() {
       var opt_menu = document.getElementById("options_menu")
       var img_div = document.getElementById("div_wrapper")
@@ -73,10 +125,10 @@
 
   function handleGesture() {
     var touch_diff = touchendY-touchstartY;
-    if (touch_diff > 100) {
+    if (touch_diff > 10) {
       close_menu();
       }
-    if (touch_diff < -100) {
+    if (touch_diff < -10) {
       open_menu();
       }
     }
@@ -107,8 +159,6 @@
         success: function(resp_data){
           var clean_data = JSON.parse(resp_data)
           switch_image(clean_data);
-          console.log("Link Pulled:");
-          console.log(clean_data);
           $(".loader").hide();
 
         }
