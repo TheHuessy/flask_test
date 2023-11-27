@@ -15,6 +15,8 @@
         <div id="options_menu" class="menu_closed">
           <p><a class="opts" id="start_toggle" onclick="start_it()"><b>Start</b></a></p>
           <p><a class="opts" id="stop_toggle" onclick="stop_it()"><b>Stop</b></a></p>
+          <!-- <div id="timeout_input"></div> -->
+          <input type="number" id="timeout_value" name="timeout_value" value=5000 />
           <p class="opt-data" id="link_info"><b>{{ response['link'] }}</b></p>
           <p class="opt-data" id="table_info"><b>{{ response['table'] }}</b></p>
         </div>
@@ -24,12 +26,24 @@
       $("#loader-spinner").hide();
     })
 
+
+    //////// TIMEOUT CHANGES ////////////
+    document.getElementById("timeout_value").addEventListener("input", function(){
+      if (this.value.length) {
+        timeout = this.value;
+      } else {
+        timeout = 5000;
+      }
+    }, false);
+    ///////////////////////////////////////////////
+
     /////////////// AUTO ADVANCE ///////////////
     const timer = ms => new Promise(res => setTimeout(res, ms));
 
     var auto_cycle = 1;
+    var timeout = 5000;
 
-    async function hands_free(timeout=5000) {
+    async function hands_free(timeout) {
       while (auto_cycle === 1) {
         next_image();
         await timer(timeout);
@@ -38,7 +52,7 @@
 
     function start_it() {
       window.auto_cycle = 1;
-      hands_free();
+      hands_free(timeout);
     }
 
     function stop_it() {
@@ -46,6 +60,8 @@
     }
     ///////////////////////////////////////////
 
+
+    //////////////////// MENU OPENING AND CLOSING /////////////////////////
     document.getElementById("div_wrapper").addEventListener('touchstart', function (event) {
       touchstartX = event.changedTouches[0].screenX;
       touchstartY = event.changedTouches[0].screenY;
@@ -99,9 +115,9 @@
     }, false);
 
     document.getElementById("options_menu").addEventListener('mouseup', function (event) {
-      if (clicked) {
-        next_image();
-      }
+//      if (clicked) {
+//        next_image();
+//      }
       touchendX = event.screenX;
       touchendY = event.screenY;
       handleGesture();
@@ -132,6 +148,8 @@
       open_menu();
       }
     }
+    /////////////////////////////////////////////////////////////////////////////////////////
+
 
     function switch_image(new_link){
       var img_target = document.getElementById("main_img");
