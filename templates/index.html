@@ -3,44 +3,102 @@
 <html>
   <head>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}">
     <title>Viewer</title>
   </head>
-  <!--  <div id="div_wrapper" onclick="next_image()"> -->
     <body>
-      <div id="div_wrapper" onclick="next_image()">
-      <!-- <p id="debug_display">{{ response['link'] }}</p> -->
-      <span id="loader-spinner" class="loader"></span>
-      <img crossorigin="anonymous" id="main_img" src="{{ response['link'] }}"></img>
-      </div>
+        <div id="div_wrapper" class="view_full" onclick="next_image()">
+          <span id="loader-spinner" class="loader"></span>
+          <img crossorigin="anonymous" id="main_img" src="{{ response['link'] }}"></img>
+        </div>
+        <div id="options_menu" class="menu_closed">
+          <p><a class="opts" id="start_toggle" onclick="start_it()"><b>Start</b></a></p>
+          <p><a class="opts" id="stop_toggle" onclick="stop_it()"><b>Stop</b></a></p>
+          <p class="opt-data" id="link_info"><b>{{ response['link'] }}</b></p>
+          <p class="opt-data" id="table_info"><b>{{ response['table'] }}</b></p>
+        </div>
     </body>
-    <!-- </div> -->
   <script>
     $(document).ready(function() {
       $("#loader-spinner").hide();
     })
 
+    /////////////// AUTO ADVANCE ///////////////
+    const timer = ms => new Promise(res => setTimeout(res, ms));
+
+    var auto_cycle = 1;
+
+    async function hands_free(timeout=5000) {
+      while (auto_cycle === 1) {
+        next_image();
+        await timer(timeout);
+      }
+    }
+
+    function start_it() {
+      window.auto_cycle = 1;
+      hands_free();
+    }
+
+    function stop_it() {
+      window.auto_cycle = 0;
+    }
+    ///////////////////////////////////////////
+
+    document.getElementById("div_wrapper").addEventListener('touchstart', function (event) {
+      touchstartX = event.changedTouches[0].screenX;
+      touchstartY = event.changedTouches[0].screenY;
+    }, false);
+
+    document.getElementById("div_wrapper").addEventListener('touchend', function (event) {
+      touchendX = event.changedTouches[0].screenX;
+      touchendY = event.changedTouches[0].screenY;
+      handleGesture();
+    }, false);
+
+    function open_menu() {
+      var opt_menu = document.getElementById("options_menu")
+      var img_div = document.getElementById("div_wrapper")
+      opt_menu.className = "menu_open";
+      img_div.className = "menued"
+    }
+
+    function close_menu() {
+      var opt_menu = document.getElementById("options_menu")
+      var img_div = document.getElementById("div_wrapper")
+      opt_menu.className = "menu_closed";
+      img_div.className = "view_full"
+    }
+
+
+  function handleGesture() {
+    var touch_diff = touchendY-touchstartY;
+    if (touch_diff > 100) {
+      close_menu();
+      }
+    if (touch_diff < -100) {
+      open_menu();
+      }
+    }
+
     function switch_image(new_link){
       var img_target = document.getElementById("main_img");
-//      if ( !img_target.includes("static")
-      img_target.crossOrigin = "Anonymous";
-      // img_target.src = new_link;
-      if ( new_link.includes("static")) {
-        img_target.src = new_link;
-      } else {
-        img_target.src = new_link+"?not-from-cache-please";
-      }
+      var opt_link_target = document.getElementById("link_info");
+      var opt_table_target = document.getElementById("table_info");
 
-//      var debug = document.getElementById("debug_display");
-//      debug.innerHTML = new_link;
+      img_target.crossOrigin = "Anonymous";
+      if ( new_link['link'].includes("static")) {
+        var link = new_link['link'];
+      } else {
+        var link = new_link['link']+"?not-from-cache-please";
+      }
+      img_target.src = link;
+      opt_link_target.textContent = link;
+      opt_table_target.textContent = new_link['table'];
     }
 
     function next_image(){
-      //$("#loader-spinner").show();
       $(".loader").show();
-//      $.ajaxSetup({
-//            headers: { 'Access-Control-Allow-Origin': '*' }
-//      });
       $.ajax({
         type: 'GET',
         url: "/viewer_api",
@@ -48,16 +106,13 @@
         dataType: "text",
         success: function(resp_data){
           var clean_data = JSON.parse(resp_data)
-          switch_image(clean_data['link']);
+          switch_image(clean_data);
           console.log("Link Pulled:");
           console.log(clean_data);
           $(".loader").hide();
 
         }
       });
-      // $("#loader-spinner").hide();
-      // $(".loader").hide();
-
     }
 
   </script>

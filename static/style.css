@@ -2,6 +2,9 @@
 body {
   background-color: #424242;
   margin: 0;
+  bottom: 0px;
+  position: relative;
+  z-index: 1;
 }
 
 img {
@@ -12,15 +15,31 @@ img {
   max-width: 100%;
 }
 
-div {
+.view_full {
+  height: 100vh;
+}
+
+div#div_wrapper {
+  position: relative;
+  bottom: 0px;
   display: block;
   border: none !important;
   padding: 0px;
   box-shadow: none !important;
   height: 100vh;
+  z-index: 2; 
 }
 
-/* .dots-5 { */
+#options_menu {
+  text-align: center;
+  background-color: #7d7c7c;
+  border-color: #bcbcbc;
+  bottom: 0px;
+  position: absolute;
+  color: #bcbcbc;
+  z-index: 100;
+}
+
 .loader {
   width: 15px;
   aspect-ratio: 1;
@@ -39,39 +58,23 @@ div {
   100%{box-shadow: 20px 0 #0002,-20px 0 #fff; background: #fff }
 }
 
-/* .loader {
-  width: 48px;
-  height: 48px;
-  border: 5px solid #FFF;
-  border-radius: 50%;
-  display: inline-block;
-  position: absolute;
-  top: 50%;
-  box-sizing: border-box;
-  animation: rotation 1s linear infinite;
-  z-index: 1000;
-} */
+.menued {
+  /* make this just the view height -100px so the image gets smaller to shandle. Change the class of the div_wrapper to this when we change the class of the menu to menu_open */
+  /* bottom: 100px */
+  height: 100vh-200px;
+}
 
-/* .loader::after {
-  content: '';
-  box-sizing: border-box;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 3px solid;
-  border-color: #FF3D00 transparent;
-} */
+.menu_closed {
+  width: 100%;
+  height: 0px;
+  overflow: hidden;
+  transition: height 1s;
+}
 
-/* @keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-} */
+.menu_open {
+  height: 200px;
+  width: 100%;
+  overflow: visible;
+  transition: height 1s;
+}
 
