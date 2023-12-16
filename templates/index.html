@@ -16,7 +16,7 @@
           <p><a class="opts" id="start_toggle" onclick="start_it()"><b>Start</b></a></p>
           <p><a class="opts" id="stop_toggle" onclick="stop_it()"><b>Stop</b></a></p>
           <!-- <div id="timeout_input"></div> -->
-          <input type="number" id="timeout_value" name="timeout_value" value=5000 />
+          <input type="number" id="timeout_value" name="timeout_value" value=7/>
           <p class="opt-data" id="link_info"><b>{{ response['link'] }}</b></p>
           <p class="opt-data" id="table_info"><b>{{ response['table'] }}</b></p>
         </div>
@@ -32,7 +32,7 @@
       if (this.value.length) {
         timeout = this.value;
       } else {
-        timeout = 5000;
+        timeout = 7;
       }
     }, false);
     ///////////////////////////////////////////////
@@ -41,7 +41,8 @@
     const timer = ms => new Promise(res => setTimeout(res, ms));
 
     var auto_cycle = 1;
-    var timeout = 5000;
+    // var timeout = 7000;
+    var timeout = 7;
 
     async function hands_free(timeout) {
       while (auto_cycle === 1) {
@@ -52,6 +53,7 @@
 
     function start_it() {
       window.auto_cycle = 1;
+      timeout = timeout*1000
       hands_free(timeout);
     }
 
