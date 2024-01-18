@@ -19,12 +19,6 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 # FUNCTIONS DEFS #
 ##################
 
-## JS for auto advance:
-
-# while (true) {
-#   await new Promise(r => setTimeout(r, 5000));
-#   next_image();
-# }
 cached_folder = "/home/pi/repos/viewer_app/static/cache/"
 existing_files = os.listdir(cached_folder)
 [os.remove(os.path.join(cached_folder, x)) for x in existing_files]
@@ -68,8 +62,6 @@ def get_random_link():
     raw_dat_out = su("strobot").execute("SELECT * FROM single_viewer")
     link = raw_dat_out['end_link'][0]
     table = raw_dat_out['table'][0]
-    # cached_folder = "/home/pi/repos/viewer_app/static/cache/"
-    # existing_files = os.listdir(cached_folder)
 
     if '/p/' in link:
         dl_link = insta_fresh(link)
@@ -85,8 +77,6 @@ def get_random_link():
             insta_auth()
             dl_link = insta_fresh(link)
 
-#        cached_folder = "/home/pi/repos/viewer_app/static/cache/"
-#         [os.remove(os.path.join(cached_folder, x)) for x in existing_files]
         filename = link.split('/p/')[1].replace("/", "")
 
         urllib.request.urlretrieve(dl_link, "static/cache/{}.jpg".format(filename))
@@ -94,7 +84,6 @@ def get_random_link():
         return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table})
 
     elif 'i.redd.it' in link:
-        # [os.remove(os.path.join(cached_folder, x)) for x in existing_files]
         filename = link.split(".")[-2].split("/")[-1]
 
         try:
@@ -136,19 +125,10 @@ def get_random_link():
 
 def insta_fresh(img_link):
     pre_url = "https://www.instagram.com{}media/?size=l".format(img_link)
-
-    ###########
-    print("insta_fresh attempt for '{}' ...".format(pre_url))
-    ###########
-
     request_data = requests.get(pre_url)
-
-    ###########
-    # print("request value: {}".format(request_data))
-    ###########
-
     if request_data.status_code != 200:
         return None
+
     return request_data.url
 
 def kill_non_external(link: str, table_name: str):
@@ -172,7 +152,7 @@ def main_page():
     link_data = get_random_link()
     out_hash = {'status': 1, 'link': link_data.json['link'], 'table': link_data.json['table']}
 
-    return(render_template("index.html", response=out_hash))
+    return render_template("index.html", response=out_hash)
 
 
 ###############
@@ -187,7 +167,7 @@ def viewer_items():
     img_resp = requests.get(raw_dat_out.json['link'])
     print("image data: {}\n image_status: {}".format(raw_dat_out.json, img_resp))
 
-    return(raw_dat_out)
+    return raw_dat_out
 
 @app.route("/viewer_post_api", methods=["POST"])
 def post_link_api():

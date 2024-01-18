@@ -10,16 +10,13 @@
       <div id='button_div'>
           <button class="trans_button" id="back-button" onclick="get_last_image()">«</button>
       </div>
-      <!-- <div id="div_wrapper" class="view_full" onclick="next_image()">  -->
         <div id="div_wrapper" class="view_full">
           <span id="loader-spinner" class="loader"></span>
-          <!-- <button class="trans_button" id="back-button" onclick="get_last_image()">«</button> -->
           <img crossorigin="anonymous" id="main_img" src="{{ response['link'] }}"></img>
         </div>
         <div id="options_menu" class="menu_closed">
           <p><a class="opts" id="start_toggle" onclick="start_it()"><b>Start</b></a></p>
           <p><a class="opts" id="stop_toggle" onclick="stop_it()"><b>Stop</b></a></p>
-          <!-- <div id="timeout_input"></div> -->
           <input type="number" id="timeout_value" name="timeout_value" value=7/>
           <p class="opt-data" id="link_info"><b>{{ response['link'] }}</b></p>
           <p class="opt-data" id="table_info"><b>{{ response['table'] }}</b></p>
@@ -27,10 +24,9 @@
     </body>
   <script>
     var sess_hist = [];
-    
+
     $(document).ready(function() {
       $("#loader-spinner").hide();
-      //var sess_hist = [];
     })
 
 
@@ -39,7 +35,7 @@
       if (this.value.length) {
         timeout = this.value;
       } else {
-        timeout = 7;
+        timeout = 10;
       }
     }, false);
     ///////////////////////////////////////////////
@@ -49,7 +45,7 @@
 
     var auto_cycle = 1;
     // var timeout = 7000;
-    var timeout = 7;
+    var timeout = 10;
 
     async function hands_free(timeout) {
       while (auto_cycle === 1) {
@@ -70,7 +66,6 @@
 
     function get_current_link_obj() {
       var img_target = document.getElementById("main_img");
-//      var opt_link_target = document.getElementById("link_info");
       var opt_table_target = document.getElementById("table_info");
 
       return {'link': img_target.src, 'table': opt_table_target.textContext}
@@ -117,7 +112,6 @@
 
     document.getElementById("div_wrapper").addEventListener('mouseup', function (event) {
       if (clicked) {
-        //// GET CURRENT LINK OBJECT BY READING THE ELEMENTS (FUNCTION FOR THIS)
         next_image();
       }
       touchendX = event.screenX;
@@ -148,9 +142,6 @@
     }, false);
 
     document.getElementById("options_menu").addEventListener('mouseup', function (event) {
-//      if (clicked) {
-//        next_image();
-//      }
       touchendX = event.screenX;
       touchendY = event.screenY;
       handleGesture();
@@ -186,40 +177,22 @@
 
     function add_link_to_history(link_obj) {
       sess_hist.push({'link': link_obj['link'], 'table': link_obj['table']});
-      /////////////////////////////////////
-      console.log(`Session Hist from ADDING`);
-      console.log(sess_hist);
     }
 
     function get_last_image() {
       if (sess_hist.length > 0) {
-//      console.log(`Session Hist from GETTING`);
-//      console.log(sess_hist);
-//      next_link = sess_hist.pop(-1);
-//      switch_image(next_link);
-        ////////////
-          console.log("Switching Image to last link...");
-        console.log("PRE POP ARRAY:");
-        console.log(sess_hist);
         switch_image(sess_hist.pop(-1));
-        console.log(`Session Hist from GETTING (POST-POP)`);
-        console.log(sess_hist);
       } else {
-        console.log("You are at the beginning of the session history");
+        alert("You are at the beginning of the session history");
       }
     }
 
 
 
     function switch_image(new_link){
-      /////////////////////////
-        console.log(`Switching image using...`);
-        console.log(new_link);
       var img_target = document.getElementById("main_img");
       var opt_link_target = document.getElementById("link_info");
       var opt_table_target = document.getElementById("table_info");
-
-//      current_data = get_current_link_obj();
 
       img_target.crossOrigin = "Anonymous";
       if ( new_link['link'].includes("static") || new_link['link'].includes("?not-from-cache-please")) {
@@ -230,9 +203,6 @@
       img_target.src = link;
       opt_link_target.textContent = link;
       opt_table_target.textContent = new_link['table'];
-      /////////////
-        console.log(`Image Switched, allegedly...`);
-//        add_link_to_history(current_data);
     }
 
     function next_image(){
@@ -246,8 +216,6 @@
           var clean_data = JSON.parse(resp_data)
           current_data = get_current_link_obj();
           switch_image(clean_data);
-          ///// This is causing it to then go back to this image. We need to pull in the existing data and add that before changing to the new one.
-          // add_link_to_history(clean_data);
           add_link_to_history(current_data);
           $(".loader").hide();
 

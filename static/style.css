@@ -59,8 +59,6 @@ div#div_wrapper {
 }
 
 .menued {
-  /* make this just the view height -100px so the image gets smaller to shandle. Change the class of the div_wrapper to this when we change the class of the menu to menu_open */
-  /* bottom: 100px */
   height: 100vh-200px;
 }
 
