@@ -7,7 +7,9 @@
     <title>Viewer</title>
   </head>
     <body>
+      <div id='button_div'>
           <button class="trans_button" id="back-button" onclick="get_last_image()">«</button>
+      </div>
       <!-- <div id="div_wrapper" class="view_full" onclick="next_image()">  -->
         <div id="div_wrapper" class="view_full">
           <span id="loader-spinner" class="loader"></span>
@@ -74,6 +76,21 @@
       return {'link': img_target.src, 'table': opt_table_target.textContext}
     }
     ///////////////////////////////////////////
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp"){
+        open_menu();
+      } else if (e.key === "ArrowDown"){
+        close_menu();
+      } else if (e.key === "ArrowLeft"){
+        get_last_image();
+      } else if (e.key === "ArrowRight"){
+        next_image();
+      }
+
+      console.log("A key was pressed.");
+      console.log(e);
+    })
 
 
     //////////////////// MENU OPENING AND CLOSING /////////////////////////
