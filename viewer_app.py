@@ -25,7 +25,9 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 #   await new Promise(r => setTimeout(r, 5000));
 #   next_image();
 # }
-
+cached_folder = "/home/pi/repos/viewer_app/static/cache/"
+existing_files = os.listdir(cached_folder)
+[os.remove(os.path.join(cached_folder, x)) for x in existing_files]
 
 def load_creds():
     with open(os.environ['CREDS_PATH']) as file:
@@ -66,8 +68,8 @@ def get_random_link():
     raw_dat_out = su("strobot").execute("SELECT * FROM single_viewer")
     link = raw_dat_out['end_link'][0]
     table = raw_dat_out['table'][0]
-    cached_folder = "/home/pi/repos/viewer_app/static/cache/"
-    existing_files = os.listdir(cached_folder)
+    # cached_folder = "/home/pi/repos/viewer_app/static/cache/"
+    # existing_files = os.listdir(cached_folder)
 
     if '/p/' in link:
         dl_link = insta_fresh(link)
@@ -83,8 +85,8 @@ def get_random_link():
             insta_auth()
             dl_link = insta_fresh(link)
 
-        cached_folder = "/home/pi/repos/viewer_app/static/cache/"
-        [os.remove(os.path.join(cached_folder, x)) for x in existing_files]
+#        cached_folder = "/home/pi/repos/viewer_app/static/cache/"
+#         [os.remove(os.path.join(cached_folder, x)) for x in existing_files]
         filename = link.split('/p/')[1].replace("/", "")
 
         urllib.request.urlretrieve(dl_link, "static/cache/{}.jpg".format(filename))
@@ -92,7 +94,7 @@ def get_random_link():
         return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table})
 
     elif 'i.redd.it' in link:
-        [os.remove(os.path.join(cached_folder, x)) for x in existing_files]
+        # [os.remove(os.path.join(cached_folder, x)) for x in existing_files]
         filename = link.split(".")[-2].split("/")[-1]
 
         try:
