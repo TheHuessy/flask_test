@@ -7,7 +7,9 @@
     <title>Viewer</title>
   </head>
     <body>
-      <!-- <div id="div_wrapper" class="view_full" onclick="next_image()">  -->
+      <div id='button_div'>
+          <button class="trans_button" id="back-button" onclick="get_last_image()">«</button>
+      </div>
         <div id="div_wrapper" class="view_full">
           <span id="loader-spinner" class="loader"></span>
           <img crossorigin="anonymous" id="main_img" src="{{ response['link'] }}"></img>
@@ -15,13 +17,14 @@
         <div id="options_menu" class="menu_closed">
           <p><a class="opts" id="start_toggle" onclick="start_it()"><b>Start</b></a></p>
           <p><a class="opts" id="stop_toggle" onclick="stop_it()"><b>Stop</b></a></p>
-          <!-- <div id="timeout_input"></div> -->
           <input type="number" id="timeout_value" name="timeout_value" value=7/>
           <p class="opt-data" id="link_info"><b>{{ response['link'] }}</b></p>
           <p class="opt-data" id="table_info"><b>{{ response['table'] }}</b></p>
         </div>
     </body>
   <script>
+    var sess_hist = [];
+
     $(document).ready(function() {
       $("#loader-spinner").hide();
     })
@@ -32,7 +35,7 @@
       if (this.value.length) {
         timeout = this.value;
       } else {
-        timeout = 7;
+        timeout = 10;
       }
     }, false);
     ///////////////////////////////////////////////
@@ -42,7 +45,7 @@
 
     var auto_cycle = 1;
     // var timeout = 7000;
-    var timeout = 7;
+    var timeout = 10;
 
     async function hands_free(timeout) {
       while (auto_cycle === 1) {
@@ -60,7 +63,29 @@
     function stop_it() {
       window.auto_cycle = 0;
     }
+
+    function get_current_link_obj() {
+      var img_target = document.getElementById("main_img");
+      var opt_table_target = document.getElementById("table_info");
+
+      return {'link': img_target.src, 'table': opt_table_target.textContext}
+    }
     ///////////////////////////////////////////
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp"){
+        open_menu();
+      } else if (e.key === "ArrowDown"){
+        close_menu();
+      } else if (e.key === "ArrowLeft"){
+        get_last_image();
+      } else if (e.key === "ArrowRight"){
+        next_image();
+      }
+
+      console.log("A key was pressed.");
+      console.log(e);
+    })
 
 
     //////////////////// MENU OPENING AND CLOSING /////////////////////////
@@ -117,9 +142,6 @@
     }, false);
 
     document.getElementById("options_menu").addEventListener('mouseup', function (event) {
-//      if (clicked) {
-//        next_image();
-//      }
       touchendX = event.screenX;
       touchendY = event.screenY;
       handleGesture();
@@ -150,7 +172,21 @@
       open_menu();
       }
     }
-    /////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
+
+
+    function add_link_to_history(link_obj) {
+      sess_hist.push({'link': link_obj['link'], 'table': link_obj['table']});
+    }
+
+    function get_last_image() {
+      if (sess_hist.length > 0) {
+        switch_image(sess_hist.pop(-1));
+      } else {
+        alert("You are at the beginning of the session history");
+      }
+    }
+
 
 
     function switch_image(new_link){
@@ -159,7 +195,7 @@
       var opt_table_target = document.getElementById("table_info");
 
       img_target.crossOrigin = "Anonymous";
-      if ( new_link['link'].includes("static")) {
+      if ( new_link['link'].includes("static") || new_link['link'].includes("?not-from-cache-please")) {
         var link = new_link['link'];
       } else {
         var link = new_link['link']+"?not-from-cache-please";
@@ -178,7 +214,9 @@
         dataType: "text",
         success: function(resp_data){
           var clean_data = JSON.parse(resp_data)
+          current_data = get_current_link_obj();
           switch_image(clean_data);
+          add_link_to_history(current_data);
           $(".loader").hide();
 
         }
