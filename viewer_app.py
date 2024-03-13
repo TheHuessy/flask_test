@@ -83,8 +83,13 @@ def get_random_link():
 
         return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table})
 
-    elif 'i.redd.it' in link:
-        filename = link.split(".")[-2].split("/")[-1]
+    elif 'i.redd.it' in link or 'reddituploads' in link or 'images2' in link:
+        if 'i.redd.it' in link:
+            filename = "iredd_{}".format(link.split(".")[-2].split("/")[-1])
+        elif 'reddituploads' in link:
+            filename = "rup_{}".format(test_link.split('/')[-1])
+        elif 'images2' in link:
+            filename = "img2_{}".format(test_link.split('/')[-1])
 
         try:
             test_resp = requests.get(link)
@@ -99,6 +104,10 @@ def get_random_link():
         urllib.request.urlretrieve(link, "static/cache/{}.jpg".format(filename))
 
         return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table})
+
+    elif 'redgif' in link:
+        return get_random_link()
+
     elif (link.startswith("http://imgur") or link.startswith("https://imgur")):
         bits = link.split("//")
         new_ending = "i."+bits[-1]
@@ -116,10 +125,12 @@ def get_random_link():
         if test_resp.url == "https://i.imgur.com/removed.png":
             kill_non_external(link=link, table_name=table)
             return get_random_link()
+        if test_resp.status_code == 429:
+            ## Too many requests, evidently, just skip it. There is a good chance it's been removed, but just in case let's just maintain the db entry
+            return get_random_link()
 
         return jsonify({'link': link, 'table':table})
     else:
-
         return jsonify({'link': link, 'table': table})
 
 
