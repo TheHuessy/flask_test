@@ -59,7 +59,11 @@ div#div_wrapper {
 }
 
 .menued {
-  height: 100vh-200px;
+  height: 100vh-250px;
+}
+
+.menued_best {
+  height: 100vh-235px;
 }
 
 .menu_closed {
@@ -70,10 +74,23 @@ div#div_wrapper {
 }
 
 .menu_open {
-  height: 200px;
+  height: 240px;
+  padding-bottom: 10px;
   width: 100%;
   overflow: visible;
   transition: height 1s;
+}
+
+.menu_open_best {
+  height: 225px;
+  padding-bottom: 10px;
+  width: 100%;
+  overflow: visible;
+  transition: height 1s;
+}
+
+.opts {
+  cursor: pointer;
 }
 
 .trans_button {

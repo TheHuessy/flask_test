@@ -3,7 +3,7 @@ import requests
 import urllib.request
 import yaml
 
-from flask import Flask, render_template, jsonify, url_for
+from flask import Flask, render_template, jsonify, url_for, request
 from flask_cors import CORS, cross_origin
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.firefox.options import Options
@@ -15,6 +15,7 @@ app = Flask(__name__)
 CORS(app)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['CORS_HEADERS'] = 'Content-Type'
+
 ##################
 # FUNCTIONS DEFS #
 ##################
@@ -58,8 +59,12 @@ def insta_auth():
         driver.close()
 
 
-def get_random_link():
-    raw_dat_out = su("strobot").execute("SELECT * FROM single_viewer")
+def get_random_link(source: str = "main"):
+    if source == "main":
+        raw_dat_out = su("strobot").execute("SELECT * FROM single_viewer")
+    elif source == "best":
+        raw_dat_out = su("strobot").execute("SELECT end_link, 'best' as table FROM single_best")
+
     link = raw_dat_out['end_link'][0]
     table = raw_dat_out['table'][0]
 
@@ -81,15 +86,15 @@ def get_random_link():
 
         urllib.request.urlretrieve(dl_link, "static/cache/{}.jpg".format(filename))
 
-        return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table})
+        return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table, 'original_link': link})
 
     elif 'i.redd.it' in link or 'reddituploads' in link or 'images2' in link:
         if 'i.redd.it' in link:
             filename = "iredd_{}".format(link.split(".")[-2].split("/")[-1])
         elif 'reddituploads' in link:
-            filename = "rup_{}".format(test_link.split('/')[-1])
+            filename = "rup_{}".format(link.split('/')[-1])
         elif 'images2' in link:
-            filename = "img2_{}".format(test_link.split('/')[-1])
+            filename = "img2_{}".format(link.split('/')[-1])
 
         try:
             test_resp = requests.get(link)
@@ -103,7 +108,7 @@ def get_random_link():
 
         urllib.request.urlretrieve(link, "static/cache/{}.jpg".format(filename))
 
-        return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table})
+        return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table, 'original_link': link})
 
     elif 'redgif' in link:
         return get_random_link()
@@ -119,7 +124,7 @@ def get_random_link():
 
             return get_random_link()
 
-        return jsonify({'link': better_link, 'table': table})
+        return jsonify({'link': better_link, 'table': table, 'original_link': link})
     elif (link.startswith("http://i.imgur") or link.startswith("https://i.imgur")):
         test_resp = requests.get(link)
         if test_resp.url == "https://i.imgur.com/removed.png":
@@ -129,9 +134,9 @@ def get_random_link():
             ## Too many requests, evidently, just skip it. There is a good chance it's been removed, but just in case let's just maintain the db entry
             return get_random_link()
 
-        return jsonify({'link': link, 'table':table})
+        return jsonify({'link': link, 'table':table, 'original_link': link})
     else:
-        return jsonify({'link': link, 'table': table})
+        return jsonify({'link': link, 'table': table, 'original_link': link})
 
 
 def insta_fresh(img_link):
@@ -160,29 +165,38 @@ def kill_non_external(link: str, table_name: str):
 @app.route("/")
 @cross_origin()
 def main_page():
-    link_data = get_random_link()
+    link_data = get_random_link(source="main")
     out_hash = {'status': 1, 'link': link_data.json['link'], 'table': link_data.json['table']}
 
-    return render_template("index.html", response=out_hash)
+    return render_template("main.html", response=out_hash)
+
+@app.route("/best")
+@cross_origin()
+def bests_page():
+    link_data = get_random_link(source="best")
+    out_hash = {'status': 1, 'link': link_data.json['link'], 'table': link_data.json['table']}
+
+    return render_template("best.html", response=out_hash)
+
 
 
 ###############
 # API CALLERS #
 ###############
 
-@app.route("/viewer_api")
+@app.route("/viewer_api", methods=["GET", "POST"])
 @cross_origin()
 def viewer_items():
-    raw_dat_out = get_random_link()
+    source = request.args.get('source')
+    raw_dat_out = get_random_link(source=source)
 
     img_resp = requests.get(raw_dat_out.json['link'])
     print("image data: {}\n image_status: {}".format(raw_dat_out.json, img_resp))
 
     return raw_dat_out
 
-@app.route("/viewer_post_api", methods=["POST"])
+@app.route("/viewer_post_api", methods=["GET", "POST"])
 def post_link_api():
-
     link = request.args.get('link')
     table_name = request.args.get('table_name')
     sql_check_cmd = "DELETE FROM {} WHERE end_link='{}'".format(table_name, link)
@@ -192,6 +206,23 @@ def post_link_api():
     sql_check.close()
 
     print(sql_check_cmd)
+
+    return jsonify({'args_lst':{x: request.args[x] for x in request.args}})
+
+@app.route("/add_to_best", methods=["POST"])
+def add_to_best():
+    link = request.args.get('end_link')
+
+    check_cmd = """SELECT end_link from best where end_link = '{}'""".format(link)
+    check_result = su("strobot").execute(check_cmd)
+    if check_result.empty:
+        sql_cmd = """INSERT INTO best ("end_link") VALUES ('{}');""".format(link)
+
+        sql_check = su("strobot").execute(sql_cmd)
+
+        sql_check.close()
+
+        print(sql_cmd)
 
     return jsonify({'args_lst':{x: request.args[x] for x in request.args}})
 

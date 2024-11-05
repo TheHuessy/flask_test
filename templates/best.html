@@ -4,9 +4,10 @@
   <head>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}">
-    <title>Viewer</title>
+    <title>Bests Viewer</title>
   </head>
     <body>
+      <input type='hidden' id='raw_img_dat' value="{{ response }}">
       <div id='button_div'>
           <button class="trans_button" id="back-button" onclick="get_last_image()">«</button>
       </div>
@@ -17,9 +18,9 @@
         <div id="options_menu" class="menu_closed">
           <p><a class="opts" id="start_toggle" onclick="start_it()"><b>Start</b></a></p>
           <p><a class="opts" id="stop_toggle" onclick="stop_it()"><b>Stop</b></a></p>
-          <input type="number" id="timeout_value" name="timeout_value" value=7/>
+          <input type="number" id="timeout_value" name="timeout_value" value=15 />
           <p class="opt-data" id="link_info"><b>{{ response['link'] }}</b></p>
-          <p class="opt-data" id="table_info"><b>{{ response['table'] }}</b></p>
+          <p><a class="opts" id="go_to_main" href={{ url_for('main_page') }}><b>Go To Main</b></a></p>
         </div>
     </body>
   <script>
@@ -35,7 +36,7 @@
       if (this.value.length) {
         timeout = this.value;
       } else {
-        timeout = 10;
+        timeout = 15;
       }
     }, false);
     ///////////////////////////////////////////////
@@ -43,9 +44,8 @@
     /////////////// AUTO ADVANCE ///////////////
     const timer = ms => new Promise(res => setTimeout(res, ms));
 
-    var auto_cycle = 1;
-    // var timeout = 7000;
-    var timeout = 10;
+    var auto_cycle = 0;
+    var timeout = 15;
 
     async function hands_free(timeout) {
       while (auto_cycle === 1) {
@@ -55,6 +55,7 @@
     }
 
     function start_it() {
+      window.auto_cycle = 0; //To turn off the previous start if it's running
       window.auto_cycle = 1;
       timeout = timeout*1000
       hands_free(timeout);
@@ -66,9 +67,9 @@
 
     function get_current_link_obj() {
       var img_target = document.getElementById("main_img");
-      var opt_table_target = document.getElementById("table_info");
+      var raw_img_input = document.getElementById("raw_img_dat");
 
-      return {'link': img_target.src, 'table': opt_table_target.textContext}
+      return {'link': img_target.src, 'table': 'best', 'original_link': raw_img_input.value}
     }
     ///////////////////////////////////////////
 
@@ -80,11 +81,17 @@
       } else if (e.key === "ArrowLeft"){
         get_last_image();
       } else if (e.key === "ArrowRight"){
+        if (auto_cycle === 1){
+          start_it();
+        }
         next_image();
+      } else if (e.key === " ") {
+        if (window.auto_cycle === 0) {
+          start_it();
+        } else if (window.auto_cycle === 1) {
+          stop_it();
+        }
       }
-
-      console.log("A key was pressed.");
-      console.log(e);
     })
 
 
@@ -151,8 +158,8 @@
     function open_menu() {
       var opt_menu = document.getElementById("options_menu")
       var img_div = document.getElementById("div_wrapper")
-      opt_menu.className = "menu_open";
-      img_div.className = "menued"
+      opt_menu.className = "menu_open_best";
+      img_div.className = "menued_best"
     }
 
     function close_menu() {
@@ -192,7 +199,7 @@
     function switch_image(new_link){
       var img_target = document.getElementById("main_img");
       var opt_link_target = document.getElementById("link_info");
-      var opt_table_target = document.getElementById("table_info");
+      var raw_img_input = document.getElementById("raw_img_dat");
 
       img_target.crossOrigin = "Anonymous";
       if ( new_link['link'].includes("static") || new_link['link'].includes("?not-from-cache-please")) {
@@ -202,18 +209,17 @@
       }
       img_target.src = link;
       opt_link_target.textContent = link;
-      opt_table_target.textContent = new_link['table'];
-    }
+      raw_img_input.value = JSON.stringify(new_link); }
 
     function next_image(){
       $(".loader").show();
       $.ajax({
         type: 'GET',
         url: "/viewer_api",
-        data: {},
+        data: {'source': 'best'},
         dataType: "text",
         success: function(resp_data){
-          var clean_data = JSON.parse(resp_data)
+          var clean_data = JSON.parse(resp_data);
           current_data = get_current_link_obj();
           switch_image(clean_data);
           add_link_to_history(current_data);
