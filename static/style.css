@@ -15,6 +15,10 @@ img {
   max-width: 100%;
 }
 
+a {
+  color: inherit;
+}
+
 .view_full {
   height: 100vh;
 }
@@ -87,6 +91,24 @@ div#div_wrapper {
   width: 100%;
   overflow: visible;
   transition: height 1s;
+}
+
+.popupcont {
+  border: 0px;
+  position: relative;
+}
+
+.popup {
+  display: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 1px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  z-index: 99;
 }
 
 .opts {

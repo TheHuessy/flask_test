@@ -15,14 +15,19 @@
           <span id="loader-spinner" class="loader"></span>
           <img crossorigin="anonymous" id="main_img" src="{{ response['link'] }}"></img>
         </div>
-        <div id="options_menu" class="menu_closed">
-          <p><a class="opts" id="start_toggle" onclick="start_it()"><b>Start</b></a></p>
-          <p><a class="opts" id="stop_toggle" onclick="stop_it()"><b>Stop</b></a></p>
-          <input type="number" id="timeout_value" name="timeout_value" value=15 />
-          <p class="opt-data" id="link_info"><b>{{ response['link'] }}</b></p>
-          <p class="opt-data" id="table_info"><b>{{ response['table'] }}</b></p>
-          <p><a class="opts" id="add_to_best" onclick="add_to_best()"><b>Best</b></a></p>
-          <p><a class="opts" id="go_to_best" href={{ url_for('bests_page') }}><b>Go To Best</b></a></p>
+        <div id="popup_container" class="popupcont">
+          <div id="bestPopUp" class="popup">
+            <h2 style="margin-top: 0px; margin-bottom: 1px; height: 60px;">Image was added to best</h2>
+          </div>
+          <div id="options_menu" class="menu_closed">
+            <p><a class="opts" id="start_toggle" onclick="start_it()"><b>Start</b></a></p>
+            <p><a class="opts" id="stop_toggle" onclick="stop_it()"><b>Stop</b></a></p>
+            <input type="number" id="timeout_value" name="timeout_value" value=15 />
+            <p class="opt-data" id="link_info"><b>{{ response['link'] }}</b></p>
+            <p class="opt-data" id="table_info"><b>{{ response['table'] }}</b></p>
+            <p><a class="opts" id="add_to_best" onclick="add_to_best()"><b>Best</b></a></p>
+            <p><a class="opts" id="go_to_best" href={{ url_for('bests_page') }}><b>Go To Best</b></a></p>
+          </div>
         </div>
     </body>
   <script>
@@ -87,8 +92,11 @@
       } else if (e.key === "ArrowRight"){
         if (auto_cycle === 1){
           start_it();
+        } else {
+          next_image();
         }
-        next_image();
+      } else if (e.key === "b") {
+        add_to_best();
       } else if (e.key === " ") {
         if (window.auto_cycle === 0) {
           start_it();
@@ -243,6 +251,17 @@
         data: img_data,
         dataType: "text"
       });
+
+      show_best_popup();
+    }
+
+    function show_best_popup() {
+      var popup = document.getElementById("bestPopUp");
+      popup.style.display = "block";
+
+      setTimeout(function() {
+        popup.style.display = "none";
+      }, 2000);
     }
 
   </script>
