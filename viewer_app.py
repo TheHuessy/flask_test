@@ -60,10 +60,11 @@ def insta_auth():
 
 
 def get_random_link(source: str = "main"):
+    eng = su("strobot")
     if source == "main":
-        raw_dat_out = su("strobot").execute("SELECT * FROM single_viewer")
+        raw_dat_out = eng.execute("SELECT * FROM single_viewer")
     elif source == "best":
-        raw_dat_out = su("strobot").execute("SELECT end_link, 'best' as table FROM single_best")
+        raw_dat_out = eng.execute("SELECT end_link, 'best' as table FROM single_best")
 
     link = raw_dat_out['end_link'][0]
     table = raw_dat_out['table'][0]
@@ -151,7 +152,6 @@ def kill_non_external(link: str, table_name: str):
     sql_check_cmd = "DELETE FROM {} WHERE end_link='{}'".format(table_name, link)
     try:
         sql_check = su("strobot").execute(sql_check_cmd)
-        sql_check.close()
     except Exception as err:
         print("Could not delete row!\n SQL CMD: {}\nERROR: {}".format(sql_check_cmd, err))
     else:
@@ -203,8 +203,6 @@ def post_link_api():
 
     sql_check = su("strobot").execute(sql_check_cmd)
 
-    sql_check.close()
-
     print(sql_check_cmd)
 
     return jsonify({'args_lst':{x: request.args[x] for x in request.args}})
@@ -219,8 +217,6 @@ def add_to_best():
         sql_cmd = """INSERT INTO best ("end_link") VALUES ('{}');""".format(link)
 
         sql_check = su("strobot").execute(sql_cmd)
-
-        sql_check.close()
 
         print(sql_cmd)
 
