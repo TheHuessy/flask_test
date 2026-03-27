@@ -18,7 +18,7 @@
         <div id="options_menu" class="menu_closed">
           <p><a class="opts" id="start_toggle" onclick="start_it()"><b>Start</b></a></p>
           <p><a class="opts" id="stop_toggle" onclick="stop_it()"><b>Stop</b></a></p>
-          <input type="number" id="timeout_value" name="timeout_value" value=15 />
+          <input type="number" id="timeout_value" name="timeout_value" value=8 />
           <p class="opt-data" id="link_info"><b>{{ response['link'] }}</b></p>
           <p><a class="opts" id="go_to_main" href={{ url_for('main_page') }}><b>Go To Main</b></a></p>
         </div>
@@ -36,7 +36,7 @@
       if (this.value.length) {
         timeout = this.value;
       } else {
-        timeout = 15;
+        timeout = 8;
       }
     }, false);
     ///////////////////////////////////////////////
@@ -45,7 +45,7 @@
     const timer = ms => new Promise(res => setTimeout(res, ms));
 
     var auto_cycle = 0;
-    var timeout = 15;
+    var timeout = 8;
 
     async function hands_free(timeout) {
       while (auto_cycle === 1) {

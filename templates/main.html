@@ -8,8 +8,17 @@
   </head>
     <body>
       <input type='hidden' id='raw_img_dat' value="{{ response }}">
+      {% if response['is_best'] == 0 %}
+      <div id='best_marker_div' style="dispaly: none;">
+      {% else %}
+      <div id='best_marker_div'>
+      {% endif %}
+        <a>♥</a>
+      </div>
       <div id='button_div'>
-          <button class="trans_button" id="back-button" onclick="get_last_image()">«</button>
+        <!-- want to put this in the upper right if best, a-la the reverse button: ♥, easiest to copy paste from a site that has the char, the alt key bindings are not consistent -->
+
+      <button class="trans_button" id="back-button" onclick="get_last_image()">«</button>
       </div>
         <div id="div_wrapper" class="view_full">
           <span id="loader-spinner" class="loader"></span>
@@ -22,7 +31,7 @@
           <div id="options_menu" class="menu_closed">
             <p><a class="opts" id="start_toggle" onclick="start_it()"><b>Start</b></a></p>
             <p><a class="opts" id="stop_toggle" onclick="stop_it()"><b>Stop</b></a></p>
-            <input type="number" id="timeout_value" name="timeout_value" value=15 />
+            <input type="number" id="timeout_value" name="timeout_value" value=10 />
             <p class="opt-data" id="link_info"><b>{{ response['link'] }}</b></p>
             <p class="opt-data" id="table_info"><b>{{ response['table'] }}</b></p>
             <p><a class="opts" id="add_to_best" onclick="add_to_best()"><b>Best</b></a></p>
@@ -213,8 +222,18 @@
       var opt_link_target = document.getElementById("link_info");
       var opt_table_target = document.getElementById("table_info");
       var raw_img_input = document.getElementById("raw_img_dat");
+      var is_best_div =  document.getElementById("best_marker_div");
 
       img_target.crossOrigin = "Anonymous";
+
+      var is_best = new_link['in_best']
+
+      if ( is_best === 1 ) {
+        is_best_div.style.display = "";
+      } else {
+        is_best_div.style.display = "none";
+      }
+
       if ( new_link['link'].includes("static") || new_link['link'].includes("?not-from-cache-please")) {
         var link = new_link['link'];
       } else {

@@ -68,6 +68,7 @@ def get_random_link(source: str = "main"):
 
     link = raw_dat_out['end_link'][0]
     table = raw_dat_out['table'][0]
+    in_best = int(raw_dat_out['best'][0])
 
     if '/p/' in link:
         dl_link = insta_fresh(link)
@@ -87,7 +88,7 @@ def get_random_link(source: str = "main"):
 
         urllib.request.urlretrieve(dl_link, "static/cache/{}.jpg".format(filename))
 
-        return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table, 'original_link': link})
+        return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table, 'original_link': link, 'in_best': in_best})
 
     elif 'i.redd.it' in link or 'reddituploads' in link or 'images2' in link:
         if 'i.redd.it' in link:
@@ -109,7 +110,7 @@ def get_random_link(source: str = "main"):
 
         urllib.request.urlretrieve(link, "static/cache/{}.jpg".format(filename))
 
-        return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table, 'original_link': link})
+        return jsonify({'link': url_for('static', filename="cache/{}.jpg".format(filename), _scheme='http', _external=True), 'table': table, 'original_link': link, 'in_best': in_best})
 
     elif 'redgif' in link:
         return get_random_link()
@@ -125,7 +126,7 @@ def get_random_link(source: str = "main"):
 
             return get_random_link()
 
-        return jsonify({'link': better_link, 'table': table, 'original_link': link})
+        return jsonify({'link': better_link, 'table': table, 'original_link': link, 'in_best': in_best})
     elif (link.startswith("http://i.imgur") or link.startswith("https://i.imgur")):
         test_resp = requests.get(link)
         if test_resp.url == "https://i.imgur.com/removed.png":
@@ -135,9 +136,9 @@ def get_random_link(source: str = "main"):
             ## Too many requests, evidently, just skip it. There is a good chance it's been removed, but just in case let's just maintain the db entry
             return get_random_link()
 
-        return jsonify({'link': link, 'table':table, 'original_link': link})
+        return jsonify({'link': link, 'table':table, 'original_link': link, 'in_best': in_best})
     else:
-        return jsonify({'link': link, 'table': table, 'original_link': link})
+        return jsonify({'link': link, 'table': table, 'original_link': link, 'in_best': in_best})
 
 
 def insta_fresh(img_link):
