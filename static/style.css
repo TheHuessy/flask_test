@@ -1,4 +1,3 @@
-
 body {
   background-color: #424242;
   margin: 0;
@@ -37,7 +36,33 @@ div#best_marker_div {
   padding: 0px;
   vertical-align: baseline;
   z-index: 99;
+}
 
+@keyframes best-marker-flash {
+  0% {
+    color: white;
+  }
+  20% {
+    color: black;
+  }
+  40% {
+    color: white;
+  }
+  60% {
+    color: black;
+  }
+  80% {
+    color: white;
+  }
+  100% {
+    color: black;
+  }
+}
+
+.flash-marker {
+  animation-duration: 1s;
+  animation-name: best-marker-flash;
+  animation-iteration-count: 1;
 }
 
 div#div_wrapper {
@@ -95,8 +120,8 @@ div#div_wrapper {
 }
 
 .menu_open {
-  height: 240px;
-  padding-bottom: 10px;
+  height: 275px;
+  padding-bottom: 15px;
   width: 100%;
   overflow: visible;
   transition: height 1s;
@@ -149,3 +174,4 @@ div#div_wrapper {
   vertical-align: baseline;
   z-index: 99;
 }
+
