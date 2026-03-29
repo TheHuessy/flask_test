@@ -167,7 +167,7 @@ def kill_non_external(link: str, table_name: str):
 @cross_origin()
 def main_page():
     link_data = get_random_link(source="main")
-    out_hash = {'status': 1, 'link': link_data.json['link'], 'table': link_data.json['table']}
+    out_hash = {"status": 1, "link": link_data.json['link'], "table": link_data.json['table'], "in_best": link_data.json['in_best']}
 
     return render_template("main.html", response=out_hash)
 
